@@ -10,8 +10,15 @@
                 <input type="text" class="form-control" id="title" placeholder="제목을 입력하세요">
             </div>
             <div class="form-group">
-                <label for="author"> 작성자 </label>
-                <input type="text" class="form-control" id="author" placeholder="작성자를 입력하세요">
+                <label for="email">Email</label>
+                <input type="text" class="form-control" id="email" value="{{userEmail}}" readonly>
+            </div>
+<!--            -->
+            <div class="form-group">
+
+                <label for="author">작성자</label>
+                <input type="text" class="form-control" id="author" value="{{userName}}" readonly>
+<!--                <img src="{{userPicture}}" alt="" style="border-radius: 70%">-->
             </div>
             <div class="form-group">
                 <label for="content"> 내용 </label>
@@ -19,8 +26,57 @@
             </div>
         </form>
         <a href="/" role="button" class="btn btn-secondary">취소</a>
-        <button type="button" class="btn btn-primary" id="btn-save">등록</button>
+        <button type="button" class="btn btn-primary" id="btn-save" onclick="save()">등록</button>
+        <button type="button" class="btn btn-primary" id="btn-getAuthUser" onclick="getAuthUser()">유저권한등록</button>
     </div>
 </div>
+<script>
+    function save() {
+        var data = {
+            title: $('#title').val(),
+            author: $('#author').val(),
+            content: $('#content').val(),
 
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/v1/posts',
+            dataType: 'json',
+            contentType:'application/json; charset=utf-8',
+            data: JSON.stringify(data)
+        })
+                .done(function(data) {
+                    console.log(data)
+                    alert('글이 등록되었습니다.');
+                    window.location.href = '/';
+                })
+                .fail(function () {
+                   alert("권한이 없습니다.")
+                });
+    }
+    function getAuthUser() {
+
+        console.log(document.getElementById("email").value)
+
+        var data = {
+
+        };
+        data.email = document.getElementById("email").value
+        $.ajax({
+            type: 'PUT',
+            url: '/api/v1/getUserAuthUpdate/',
+            // dataType: 'json',
+            // contentType:'application/json; charset=utf-8',
+            data: JSON.stringify(data)
+        })
+                .done(function(data) {
+                    alert('권한을 얻었습니다');
+                    window.location.href = '/';
+                })
+                .fail(function () {
+                    alert("권한이 없습니다.")
+                });
+    }
+</script>
 {{>layout/footer}}
